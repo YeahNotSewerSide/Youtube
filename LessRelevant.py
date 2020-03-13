@@ -8,7 +8,7 @@ import time
 
 
 
-def good_staff(view_rate=100):
+def good_stuff(view_rate=100):
     done = []
     word = random.choice(words)
     print(word)
@@ -20,7 +20,7 @@ def good_staff(view_rate=100):
         print(count)
         data = vid.get_videos(word,pgtoken,itct)
         for key,item in vid.parse_main_videos_info(data).items():
-            if item <= 100:
+            if item <= view_rate:
                 if key in done:
                     continue
                 else:
@@ -47,7 +47,7 @@ def ctrl_v():
 
 if __name__ == '__main__':
     while True:      
-        id = good_staff(5)
+        id = good_stuff(5)
         print(id)    
         set_to_clipboard(id)
         ctrl_v()

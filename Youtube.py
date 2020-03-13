@@ -28,18 +28,21 @@ class Videos:
                 except:
                     out[item['videoRenderer']['videoId']] = 0
         except:
-            for item in data[1]['response']['continuationContents']['itemSectionContinuation']['contents']:
-                if 'videoRenderer' not in item.keys():
-                    continue
-                try:
-                    parse = (item['videoRenderer']['viewCountText']['simpleText'].split(' '))[0]
-                    dt = parse.replace('.','')
-                except:
-                    continue #if stream
-                try:
-                    out[item['videoRenderer']['videoId']] = int(dt)
-                except:
-                    out[item['videoRenderer']['videoId']] = 0
+            try:
+                for item in data[1]['response']['continuationContents']['itemSectionContinuation']['contents']:
+                    if 'videoRenderer' not in item.keys():
+                        continue
+                    try:
+                        parse = (item['videoRenderer']['viewCountText']['simpleText'].split(' '))[0]
+                        dt = parse.replace('.','')
+                    except:
+                        continue #if stream
+                    try:
+                        out[item['videoRenderer']['videoId']] = int(dt)
+                    except:
+                        out[item['videoRenderer']['videoId']] = 0
+            except:
+                pass
         return out
 
     def get_videos(self,req:str,pgtoken='',itct=''):

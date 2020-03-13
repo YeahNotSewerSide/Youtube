@@ -17,6 +17,9 @@ def good_stuff(view_rate=100):
     itct = ''
     count = 0
     while True:
+
+        if count == 100:
+            break
         print(count)
         data = vid.get_videos(word,pgtoken,itct)
         for key,item in vid.parse_main_videos_info(data).items():
@@ -30,15 +33,18 @@ def good_stuff(view_rate=100):
             pgtoken = data[1]['response']['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['continuations'][0]['nextContinuationData']['continuation']
             itct = data[1]['response']['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['continuations'][0]['nextContinuationData']['clickTrackingParams']
         except:
-            pgtoken = data[1]['response']['continuationContents']['itemSectionContinuation']['continuations'][0]['nextContinuationData']['continuation']
-            itct = data[1]['response']['continuationContents']['itemSectionContinuation']['continuations'][0]['nextContinuationData']['clickTrackingParams']
+            try:
+                pgtoken = data[1]['response']['continuationContents']['itemSectionContinuation']['continuations'][0]['nextContinuationData']['continuation']
+                itct = data[1]['response']['continuationContents']['itemSectionContinuation']['continuations'][0]['nextContinuationData']['clickTrackingParams']
+            except:
+                return ''
         count += 1
     return ''
 
 def set_to_clipboard(data:str):
     OpenClipboard()
     EmptyClipboard()
-    SetClipboardText('https://www.youtube.com/watch?v='+data+' ля шо нашел',CF_UNICODETEXT)
+    SetClipboardText(data,CF_UNICODETEXT)
     CloseClipboard()
 
 def ctrl_v():
@@ -46,9 +52,12 @@ def ctrl_v():
     pyautogui.press('enter')
 
 if __name__ == '__main__':
+    #set_to_clipboard('')
     while True:      
         id = good_stuff(5)
-        print(id)    
-        set_to_clipboard(id)
+        print(id)
+        if id == '':
+            continue
+        set_to_clipboard('https://www.youtube.com/watch?v='+id+' ля шо нашел')
         ctrl_v()
-        time.sleep(5)
+        #time.sleep(5)

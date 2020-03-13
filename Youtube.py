@@ -36,7 +36,10 @@ class Videos:
                     dt = parse.replace('.','')
                 except:
                     continue #if stream
-                out[item['videoRenderer']['videoId']] = int(dt)
+                try:
+                    out[item['videoRenderer']['videoId']] = int(dt)
+                except:
+                    out[item['videoRenderer']['videoId']] = 0
         return out
 
     def get_videos(self,req:str,pgtoken='',itct=''):

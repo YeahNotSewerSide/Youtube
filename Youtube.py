@@ -2,8 +2,6 @@ import requests
 import urllib.parse
 
 
-
-
 class Videos:
     def __init__(self):
         self.session_token = ''
@@ -63,14 +61,17 @@ class Videos:
                        'X-YouTube-Utc-Offset':'120',
                        'X-YouTube-Variants-Checksum':'5bab881c2eae92c1f0ba56374e524bb9'
                        })
+
         if self.session_token != '' and pgtoken != '':           
             data = self.session.post(self.base_url+f'/results?search_query={req}&pbj=1&ctoken={pgtoken}&continuation={pgtoken}&itct={itct}',data=f'urllib.parse.quote(self.session_token)',headers=headers).json()
             
         else:                      
             data = self.session.get(self.base_url+f'/results?search_query={req}&pbj=1',headers=headers).json()
             self.session_token = data[1]['xsrf_token'] 
-            self.prev_url = urllib.parse.quote(self.base_url+f"/results?search_query={req}&pbj=1",safe='/=:?&%')
+            self.prev_url = self.base_url+urllib.parse.quote(f"/results?search_query={req}&pbj=1",safe='/=:?&%')
         return data
+
+
 
 #Yep, right there
 #pgtoken = data[1]['response']['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['continuations'][0]['nextContinuationData']['continuation']

@@ -6,7 +6,7 @@ from Youtube import Videos
 import time
 
 
-done = []
+#done = []
 
 def set_to_clipboard(data:str):
     OpenClipboard()
@@ -21,45 +21,38 @@ def ctrl_v():
 
 
 def good_stuff(view_rate=100,req = ''):
-    #done = []
+    done = []
     word = req#random.choice(words)
     print(word)
     vid = Videos()
-    pgtoken = ''
-    itct = ''
-    count = 0
     while True:
         
         #print(count)
-        data = vid.get_videos(word,pgtoken,itct)
-        for key,item in vid.parse_main_videos_info(data).items():
+        try:
+            data = vid.get_videos(word)
+        except:
+            data = vid.get_videos(word)
+
+        for key,item in vid.parse_main_videos_info(data[0]).items():
             if item <= view_rate:
                 if key in done:
                     continue
                 else:
-                    #done.append(key)
-                    #set_to_clipboard('https://www.youtube.com/watch?v='+key+' ля шо нашел')
-                    #ctrl_v()
-                    #time.sleep(0.5)
-                    return key
-        try:
-            pgtoken = data[1]['response']['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['continuations'][0]['nextContinuationData']['continuation']
-            itct = data[1]['response']['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['continuations'][0]['nextContinuationData']['clickTrackingParams']
-        except:
-            try:
-                pgtoken = data[1]['response']['continuationContents']['itemSectionContinuation']['continuations'][0]['nextContinuationData']['continuation']
-                itct = data[1]['response']['continuationContents']['itemSectionContinuation']['continuations'][0]['nextContinuationData']['clickTrackingParams']
-            except:
-                return ''
-        count += 1
-    return ''
+                    done.append(key)
+        if not data[1]:
+            break
+    return done
 
 
 if __name__ == '__main__':
     
-    id = good_stuff(5,'q')
-    print('https://www.youtube.com/watch?v='+id)
-    input()
+    ids = good_stuff(50,'прикол')
+    #print(id)
+    file = open('Out.txt','w')
+    for id in ids:
+        file.write('https://www.youtube.com/watch?v='+id+'\n')
+    file.close()
+    #input()
 
     #while True:      
     #    id = good_stuff(5)

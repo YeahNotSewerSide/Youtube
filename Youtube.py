@@ -18,42 +18,13 @@ class Videos:
         self.continuation = ''
         self.api_key = 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8'
     def parse_main_videos_info(self,data:dict)->dict:#{id:viewcount} Only videos and only main info
+        
         out = {}
         try:
             for item in data[1]['response']['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['contents']:
-                if 'videoRenderer' not in item.keys():
-                    continue
-                try:
-                    parse = (item['videoRenderer']['viewCountText']['simpleText'].split(' '))[0]
-                    dt = parse.replace('.','')
-                except:
-                    continue #if stream
-                try:
-                    out[item['videoRenderer']['videoId']] = int(dt)
-                except:
-                    out[item['videoRenderer']['videoId']] = 0
-            return out
-
-        
-        except:
-            try:
-                for item in data[1]['response']['continuationContents']['itemSectionContinuation']['contents']:
-                    if 'videoRenderer' not in item.keys():
-                        continue
-                    try:
-                        parse = (item['videoRenderer']['viewCountText']['simpleText'].split(' '))[0]
-                        dt = parse.replace('.','')
-                    except:
-                        continue #if stream
-                    try:
-                        out[item['videoRenderer']['videoId']] = int(dt)
-                    except:
-                        out[item['videoRenderer']['videoId']] = 0
-                return out
-            except:
-                pass
-        try:
-            for item in data['onResponseReceivedCommands'][0]['appendContinuationItemsAction']['continuationItems'][0]['itemSectionRenderer']['contents']:
+                parse = ''
+                dt = ''
+                print(item['videoRenderer']['videoId'])
                 if 'videoRenderer' not in item.keys():
                     continue
                 try:
@@ -68,6 +39,53 @@ class Videos:
                     out[item['videoRenderer']['videoId']] = int(dt)
                 except:
                     out[item['videoRenderer']['videoId']] = 0
+                
+            return out
+       
+        except:
+            try:
+                for item in data[1]['response']['continuationContents']['itemSectionContinuation']['contents']:
+                    parse = ''
+                    dt = ''
+                    print(item['videoRenderer']['videoId'])
+                    if 'videoRenderer' not in item.keys():
+                        continue
+                    try:
+                        parse = (item['videoRenderer']['viewCountText']['simpleText'].split(' '))[0]
+                        try:
+                            dt = parse.replace(',','')
+                        except:
+                            dt = parse.replace('.','')
+                    except:
+                        continue #if stream
+                    try:
+                        out[item['videoRenderer']['videoId']] = int(dt)
+                    except:
+                        out[item['videoRenderer']['videoId']] = 0
+                    
+                return out
+            except:
+                pass
+        try:
+            for item in data['onResponseReceivedCommands'][0]['appendContinuationItemsAction']['continuationItems'][0]['itemSectionRenderer']['contents']:
+                parse = ''
+                dt = ''
+                print(item['videoRenderer']['videoId'])
+                if 'videoRenderer' not in item.keys():
+                    continue
+                try:
+                    parse = (item['videoRenderer']['viewCountText']['simpleText'].split(' '))[0]
+                    try:
+                        dt = parse.replace(',','')
+                    except:
+                        dt = parse.replace('.','')
+                except Exception as e:
+                    continue #if stream
+                try:
+                    out[item['videoRenderer']['videoId']] = int(dt)                   
+                except Exception as e:
+                    out[item['videoRenderer']['videoId']] = 0
+                
             return out
         except Exception as e:
             return out
@@ -149,11 +167,16 @@ class Videos:
 
 if __name__ == '__main__':
     vd = Videos()
+    out = []
     while True:
-        data = vd.get_videos('q')
+        data = vd.get_videos('nude')
         dt = vd.parse_main_videos_info(data[0])
+        for key,item in vd.parse_main_videos_info(data[0]).items():
+            if item < 100:
+                out.append((key,item))
         if not data[1]:
             break
+    print(out)
 
 
         

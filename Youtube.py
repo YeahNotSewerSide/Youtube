@@ -20,75 +20,41 @@ class Videos:
     def parse_main_videos_info(self,data:dict)->dict:#{id:viewcount} Only videos and only main info
         
         out = {}
+        items = []
         try:
-            for item in data[1]['response']['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['contents']:
-                parse = ''
-                dt = ''
-                print(item['videoRenderer']['videoId'])
-                if 'videoRenderer' not in item.keys():
-                    continue
-                try:
-                    parse = (item['videoRenderer']['viewCountText']['simpleText'].split(' '))[0]
-                    try:
-                        dt = parse.replace(',','')
-                    except:
-                        dt = parse.replace('.','')
-                except:
-                    continue #if stream
-                try:
-                    out[item['videoRenderer']['videoId']] = int(dt)
-                except:
-                    out[item['videoRenderer']['videoId']] = 0
-                
-            return out
-       
+            items = data[1]['response']['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['contents']
         except:
             try:
-                for item in data[1]['response']['continuationContents']['itemSectionContinuation']['contents']:
-                    parse = ''
-                    dt = ''
-                    print(item['videoRenderer']['videoId'])
-                    if 'videoRenderer' not in item.keys():
-                        continue
-                    try:
-                        parse = (item['videoRenderer']['viewCountText']['simpleText'].split(' '))[0]
-                        try:
-                            dt = parse.replace(',','')
-                        except:
-                            dt = parse.replace('.','')
-                    except:
-                        continue #if stream
-                    try:
-                        out[item['videoRenderer']['videoId']] = int(dt)
-                    except:
-                        out[item['videoRenderer']['videoId']] = 0
-                    
-                return out
+                items = data[1]['response']['continuationContents']['itemSectionContinuation']['contents']
             except:
-                pass
-        try:
-            for item in data['onResponseReceivedCommands'][0]['appendContinuationItemsAction']['continuationItems'][0]['itemSectionRenderer']['contents']:
-                parse = ''
-                dt = ''
-                print(item['videoRenderer']['videoId'])
-                if 'videoRenderer' not in item.keys():
-                    continue
                 try:
-                    parse = (item['videoRenderer']['viewCountText']['simpleText'].split(' '))[0]
-                    try:
-                        dt = parse.replace(',','')
-                    except:
-                        dt = parse.replace('.','')
-                except Exception as e:
-                    continue #if stream
-                try:
-                    out[item['videoRenderer']['videoId']] = int(dt)                   
-                except Exception as e:
-                    out[item['videoRenderer']['videoId']] = 0
-                
-            return out
-        except Exception as e:
-            return out
+                    items = data['onResponseReceivedCommands'][0]['appendContinuationItemsAction']['continuationItems'][0]['itemSectionRenderer']['contents']
+                except:
+                    pass
+
+        for item in items:
+            #print(counter)
+            parse = ''
+            dt = ''
+
+            if 'videoRenderer' not in item.keys():
+                continue
+            
+            try:
+                parse = (item['videoRenderer']['viewCountText']['simpleText'].split(' '))[0]
+            except Exception as e:
+                continue
+            #try:
+            dt = parse.replace(',','')
+            #except Exception as e:
+            dt = dt.replace('.','')
+
+            try:
+                out[item['videoRenderer']['videoId']] = int(dt)
+            except Exception as e:
+                #input(item['videoRenderer']['viewCountText']['simpleText'])
+                out[item['videoRenderer']['videoId']] = 0
+        return out
 
 
         
@@ -116,7 +82,7 @@ class Videos:
             headers.update({'X-Goog-Visitor-Id':self.visitor_data,
                             'X-Origin':self.base_url})
             request_data = {'context':{'client':{'hl':'en',
-                                                 'gl':'US',
+                                                 'gl':'GR',
                                                  'visitorData':self.visitor_data,
                                                  'userAgent':'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0,gzip(gfe)',
                                                  'clientName':'WEB',
@@ -135,7 +101,7 @@ class Videos:
                                                   'internalExperimentFlags':[],
                                                   'consistencyTokenJars':[]},
                                        'user':{},
-                                       'clientScreenNonce':self.csn,
+                                       #'clientScreenNonce':self.csn,
                                        'clickTracking':{'clickTrackingParams':self.clickTrackingParams}},
                             'continuation':self.continuation}
             data = self.session.post(self.base_url+f'/youtubei/v1/search?key={self.api_key}',headers=headers,json=request_data).json()            
@@ -151,7 +117,7 @@ class Videos:
             self.sessionId = random.randint(0,6852209091371828659)
             try:
                 self.visitor_data = data[1]['response']['responseContext']['webResponseContextExtensionData']['ytConfigData']['visitorData']
-                self.csn = data[1]['response']['responseContext']['webResponseContextExtensionData']['ytConfigData']['csn']
+                #self.csn = data[1]['response']['responseContext']['webResponseContextExtensionData']['ytConfigData']['csn']
                 self.clickTrackingParams = data[1]['response']['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['trackingParams']
                 self.continuation = data[1]['response']['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][1]['continuationItemRenderer']['continuationEndpoint']['continuationCommand']['token']
             except:
@@ -169,11 +135,11 @@ if __name__ == '__main__':
     vd = Videos()
     out = []
     while True:
-        data = vd.get_videos('nude')
+        data = vd.get_videos('None')
         dt = vd.parse_main_videos_info(data[0])
         for key,item in vd.parse_main_videos_info(data[0]).items():
             if item < 100:
-                out.append((key,item))
+                print(key,item)
         if not data[1]:
             break
     print(out)

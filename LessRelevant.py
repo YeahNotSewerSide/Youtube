@@ -46,23 +46,9 @@ def good_stuff(view_rate=100,req = ''):
 
 if __name__ == '__main__':
     
-    ids = good_stuff(50,'прикол')
-    #print(id)
-    file = open('Out.txt','w')
-    for id in ids:
-        file.write('https://www.youtube.com/watch?v='+id+'\n')
-    file.close()
-    #input()
-
-    #while True:      
-    #    id = good_stuff(5)
-    #    print(id)
-    #    #break
-    #    if id == '':
-    #        continue
-    #    else:
-    #        print(id)
-    #        input()
-    #    set_to_clipboard('https://www.youtube.com/watch?v='+id+' ля шо нашел')
-    #    ctrl_v()
-        
+    while True:
+        try:
+            stuf = good_stuff(req = 'None')
+            print(stuf)
+        except Exception as e:
+            input(e)

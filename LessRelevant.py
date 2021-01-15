@@ -48,7 +48,6 @@ if __name__ == '__main__':
     
     while True:
         try:
-            stuf = good_stuff(req = 'None')
-            print(stuf)
+            stuf = good_stuff(req = None)
         except Exception as e:
             input(e)

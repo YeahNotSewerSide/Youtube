@@ -101,7 +101,7 @@ class Videos:
                                                   'internalExperimentFlags':[],
                                                   'consistencyTokenJars':[]},
                                        'user':{},
-                                       #'clientScreenNonce':self.csn,
+                                       'clientScreenNonce':self.csn,
                                        'clickTracking':{'clickTrackingParams':self.clickTrackingParams}},
                             'continuation':self.continuation}
             data = self.session.post(self.base_url+f'/youtubei/v1/search?key={self.api_key}',headers=headers,json=request_data).json()            
@@ -117,7 +117,7 @@ class Videos:
             self.sessionId = random.randint(0,6852209091371828659)
             try:
                 self.visitor_data = data[1]['response']['responseContext']['webResponseContextExtensionData']['ytConfigData']['visitorData']
-                #self.csn = data[1]['response']['responseContext']['webResponseContextExtensionData']['ytConfigData']['csn']
+                self.csn = data[1]['response']['responseContext']['webResponseContextExtensionData']['ytConfigData']['csn']
                 self.clickTrackingParams = data[1]['response']['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['trackingParams']
                 self.continuation = data[1]['response']['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][1]['continuationItemRenderer']['continuationEndpoint']['continuationCommand']['token']
             except:
